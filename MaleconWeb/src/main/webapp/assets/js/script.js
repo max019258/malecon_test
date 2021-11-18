@@ -545,6 +545,94 @@ $(document).ready(function(){ //
 		}
 		sessionStorage.removeItem("rollback_row");// 세션 삭제	
 });
+//------------------------------------------------
+function viewExcel(){
 
+	file_path = $('#file_path').val();
+	console.log(file_path);
+	$.ajax({
+    url: "viewExcel.jsp", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+    data: { file_path: file_path },  // HTTP 요청과 함께 서버로 보낼 데이터
+    method: "POST",   // HTTP 요청 메소드(GET, POST 등)
+    dataType: "html" // 서버에서 보내줄 데이터의 타입
+	})
+	// HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+	.done(function(data) {
+		$("#view").html(data) ;
+	})
+	// HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+	.fail(function(xhr, status, errorThrown) {
+	    $("#text").html("오류가 발생했다.<br>")
+	    .append("오류명: " + errorThrown + "<br>")
+	    .append("상태: " + status);
+	})
+	// 
+	.always(function(xhr, status) {
+	    $("#text").html("요청이 완료되었습니다!");
+	});
+}
+//---------------------------------------------
+$(document).ready(function(){ // 
+	$('#img_excel').click(function(){
+		file_name=prompt("파일이름을 지정해주세요");
+		location.href="/exel?file_name="+file_name;
+		
+	});
+});
+//----------------------------------------------
+function viewTable(){
 
+	conn_name=$('#conn_name').val();
+	query = $('#query').val().trim();
+	if(query.substring(query.length-1,query.length)==";"){
+		query=query.substring(0,query.length-1);
+	}
+	query_arr=query.split(";");
+	console.log(query_arr);
+	
+	num=0;
+	query_arr.forEach(function(element){
+		num+=1;
+  		 window.open("viewTable.jsp?conn_name="+conn_name+"&query="+element.replace("\n",""),num,"width=800, height=700");
+	});
 
+	
+	
+	/*
+	$.ajax({
+    url: "viewTable.jsp", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+    data: { conn_name: conn_name,query:query },  // HTTP 요청과 함께 서버로 보낼 데이터
+    method: "POST",   // HTTP 요청 메소드(GET, POST 등)
+    dataType: "html" // 서버에서 보내줄 데이터의 타입
+	})
+	// HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+	.done(function(data) {
+		$("#view").html(data) ; //id 가 view인 테이블에 html 출력
+	})
+	// HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+	.fail(function(xhr, status, errorThrown) {
+	    $("#view").html("오류가 발생했다.<br>")
+	 
+	})
+	// 
+	.always(function(xhr, status) {
+	    $("#viewtt").html("요청이 완료되었습니다!");
+	});*/
+}
+//-----------------------------------------------------------------------------
+function viewPlan(){
+
+	conn_name=$('#conn_name').val();
+	query = $('#query').val().trim();
+	if(query.substring(query.length-1,query.length)==";"){ 
+		query=query.substring(0,query.length-1); // ;있을시 처리
+	}
+	query_arr=query.split(";");
+	console.log(query_arr);
+	
+	num=0;
+	query_arr.forEach(function(element){
+		num+=1;
+  		 window.open("viewPlan.jsp?conn_name="+conn_name+"&query="+element.replace(/\n/g," "),num,"width=800, height=700");
+	});
+}

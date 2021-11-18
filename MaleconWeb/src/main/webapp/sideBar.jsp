@@ -37,6 +37,8 @@
 
 	<!-- <li style="background-color:#f8f8f8;"><a href='reload_sideBar.jsp'>reload sideBar</a></li> -->
    <li style="background-color:#f8f8f8;"><a href='newConnect.jsp'>new Connect</a></li>
+   <li style="background-color:#f8f8f8;"><a href='sql.jsp'>SQL</a></li>
+    <li style="background-color:#f8f8f8;"><a href='readExcel.jsp'>read Excel</a></li>
   
    <%if(session.getAttribute("reload_sideBar")==null) {%>
    <c:forEach var="i" items="${connName}">

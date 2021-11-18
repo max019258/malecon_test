@@ -23,19 +23,26 @@
 	
  request.setCharacterEncoding("UTF-8");
  
+ String file_name=request.getParameter("file_name");
+ 
 	String conn_name = (String)session.getAttribute("conn_name");
 	String	open_name = (String)session.getAttribute("open_name"); 
 	String table_name = (String)session.getAttribute("table_name");
  
     // 파일 업로드된 경로
     //String root ="D:\\eclipse_project\\MaleconWeb\\src\\main\\webapp\\upload\\" + "test" + ".xlsx";
-    String savePath ="D:\\eclipse_project\\MaleconWeb\\src\\main\\webapp\\upload";
+    String savePath ="E:\\eclipse_preject\\MaleconWeb\\src\\main\\webapp\\upload";
  
     // 서버에 실제 저장된 파일명
     String filename = conn_name+"_"+open_name+"_"+table_name+".xlsx" ;
      
     // 실제 내보낼 파일명
-    String orgfilename = conn_name+"_"+open_name+"_"+table_name+".xlsx";
+    String orgfilename="";
+    if(file_name.equals("")){
+    	orgfilename = conn_name+"_"+open_name+"_"+table_name+".xlsx";
+    }else{
+    	orgfilename = file_name+".xlsx";
+    }
       
  
     InputStream in = null;

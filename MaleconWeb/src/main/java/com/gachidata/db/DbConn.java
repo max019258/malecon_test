@@ -7,11 +7,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.hamcrest.core.SubstringMatcher;
+
+import com.gachidata.page.Paging;
 
 
 
@@ -467,6 +470,183 @@ public class DbConn
 			  connection.commit();
 			
 			  return sql;
+		  }
+		  
+		  public static void deleteAll(Connection connection,String owner,String table) throws SQLException
+		  {
+			  connection.setAutoCommit(false);
+				  
+			  String sql="delete from "+owner+"."+table;
+
+			  PreparedStatement pstmt = connection.prepareStatement(sql); // 연결
+			  
+			  pstmt.executeUpdate();
+			  connection.commit();
+		
+		  }
+		  
+		  public static String insert_columnName(Connection connection,String owner,String table,String[] columns,String[] values) throws SQLException
+		  {
+			  connection.setAutoCommit(false);
+			  //---------value-----------------------------------
+			  String value="";
+			  for(String i:values) {
+					try{			//날짜로 형변환 시도하고
+						SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						java.util.Date date_newRow = fm.parse(i);					
+						
+						value+="to_date('"+i+"','YYYY-MM-DD HH24:MI:SS'),";						
+					}catch(Exception e){
+						 value+="'"+i+"'"+",";
+					}	
+				 
+			  }
+			  value=value.substring(0,value.length()-1); //맨끝에 있는 애 빼기
+			  //-------------columnName--------------------------------
+			  String column="";
+			  for(String i:columns) {
+				  column+=i+",";
+			  }
+			  column=column.substring(0,column.length()-1); //맨끝에 있는 애 빼기
+			  
+			  //------------------------------------------------------------
+			  String sql="insert into "+owner+"."+table+" ("+column+") values ("+value+")";
+			  
+			  System.out.println("insert :"+sql);
+			  
+			  PreparedStatement pstmt = connection.prepareStatement(sql); // 연결
+			  
+			  pstmt.executeUpdate();
+			  connection.commit();
+			
+			  return sql;
+		  }
+		  
+		  public static Object executeSQL(Connection connection,String query,int nowPage) throws SQLException {
+			  
+			  String temp_query=query.trim();// 공백제거한 쿼리
+			  temp_query=temp_query.substring(0,6);
+			  temp_query=temp_query.toLowerCase();
+			  
+			  String semicol=query.trim().substring(query.trim().length()-1,query.trim().length()); //맨 끝에있는 문자 가지고 오기
+			  
+			  if(semicol.equals(";")) {	//만약 끝에 1자리가 ;일시
+				  query=query.substring(0,query.length()-1);
+			  } 	 
+				  
+			  String sql=query;	  
+			  
+			  PreparedStatement pstmt = connection.prepareStatement(sql); // 연결
+			  
+			  if(temp_query.equals("select")) { //select문 일 때
+					Paging paging=new Paging();
+					paging.setPage(nowPage);
+					int total;
+					total=getTotal(connection, sql); //토탈 생성
+					paging.setTotalCount(total);
+					paging.paging();
+						
+					
+				  
+				  	sql="select * " +
+				  			"from( " +
+				  				    "select * "+ 
+				  				    "from  "+
+				  				    "( " +
+				  				     "   select rownum row_num,e.* "+
+				  				      "  from ("+sql+") e "+ 			  				        
+				  				   " ) "  +
+				  				   " where row_num>="+ paging.getBeginRow()  +
+				  				   " )  	where rownum<=("+paging.getEndRow()+"-"+paging.getBeginRow()+"+1) ";
+				  System.out.println(sql);
+				  	pstmt = connection.prepareStatement(sql); // 연결
+				  
+					  ArrayList<String[]> tableList= new ArrayList<String[]>(); //어레이 리스트 선언 
+					  
+					  ResultSet rs=pstmt.executeQuery();  ///연결			  
+					  ResultSetMetaData rsmd = rs.getMetaData();
+					  
+					  
+				      int rsSize = rsmd.getColumnCount();//컬럼 갯수 얻어오기
+				      
+				        String[] array_column = new String[rsSize]; //컬럼명 배열
+				        
+				    
+				        for (int i = 0; i < rsSize; i++)			//컬럼명 넣기
+				        {
+				        	array_column[i]=rsmd.getColumnName(i+1);//배열에 먼저 넣고 		        
+				        }
+				        tableList.add(array_column);//컬럼명 넣기완료
+					  
+				
+					  while (rs.next())  //DB접근 후 출력
+					  { 
+						  String[] array = new String[rsSize];
+						  
+						  for(int i=0;i<rsSize;i++)
+						  {
+							  array[i]=rs.getString(i+1);//배열에 먼저 넣고 					  
+						  }
+						  tableList.add(array);// 어레이리스트로 올리기
+					  }
+					  
+					  HashMap<String,Object> select=new HashMap<>();
+					  select.put("tableList",tableList);
+					  select.put("paging",paging);
+					  
+					return select;  //tableList 반환	 
+					
+					
+			  }else {
+				  int change =pstmt.executeUpdate();
+				 
+				  return change;
+			  }
+		  }
+		  
+		  
+		  public static int getTotal(Connection connection,String sql) throws SQLException {
+			  sql=sql.trim();
+			  sql="select count(*) " +
+					  " from "+
+				      "( "+
+				       	sql+
+				      ")";
+			  
+			  PreparedStatement pstmt = connection.prepareStatement(sql); // 연결
+			  ResultSet rs=pstmt.executeQuery();  ///연결
+			  
+			  int rowCount=0;
+			  while (rs.next())  //DB접근 후 출력
+			  { 			 
+				  rowCount=rs.getInt(1);
+			  }
+			  return rowCount;
+		  }
+		  public static ArrayList<String> getPlan(Connection connection, String sql) throws SQLException{
+			  //-----먼저 plan을 올린다.
+			  sql= "explain plan for "+sql;
+			  PreparedStatement pstmt = connection.prepareStatement(sql); // 연결
+			  pstmt.executeUpdate();
+			
+			  //---------- 올린 plan 출력
+			  String sql2="SELECT * FROM TABLE(dbms_xplan.display)";
+			  
+			  pstmt = connection.prepareStatement(sql2); // 연결
+			  
+			  ArrayList<String> planList= new ArrayList<String>(); //어레이 리스트 선언 
+			  
+			  ResultSet rs=pstmt.executeQuery();  ///연결			  
+			  while (rs.next())  //DB접근 후 출력
+			  { 
+				  String replace_str=rs.getString(1).replace(" ","&emsp;"); //공란 넣기
+				
+				  planList.add(replace_str);//배열에 먼저 넣고 			
+			  }
+//			  for(String i:planList) {
+//				  System.out.println(i);
+//			  }
+			  return planList;
 		  }
        
 }

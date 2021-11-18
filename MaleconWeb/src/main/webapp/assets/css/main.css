@@ -1465,14 +1465,14 @@ table {
     padding: 0.75em 0.75em; 
     }
     
-    table td:first-child {
+   /*  table td:first-child {
     position: sticky;
-    background-color: white; /* 바탕을 불투명하게 처리해야 뒤로 숨은 다른 열들을 잘 가릴 수 있다 */
+    background-color: white; 바탕을 불투명하게 처리해야 뒤로 숨은 다른 열들을 잘 가릴 수 있다
     left: 0;
     top:32px;
     z-index: 99;
 } 
-
+ */
 
   table th {
     color: black;
@@ -2319,6 +2319,5 @@ button,
     border-top: 0;
     margin-top: 0;
     padding-top: 0; }
-    
-//-----------------------------
+
 

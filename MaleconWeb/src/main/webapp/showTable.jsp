@@ -174,7 +174,7 @@
 					ArrayList<ArrayList<String>> nowListOut;
 					%>
 					<div style="float: left; padding-top:30px; padding-left:20px;height:50px; width:50px"> <!-- 엑셀 버튼 -->
-					 <a href="exel"><img src="images/exel.png" width="20px" height="20px"/></a>
+					<img src="images/exel.png" width="20px" height="20px" id="img_excel">
 					</div>
 
 					
@@ -222,7 +222,7 @@
 									<tr >
 									<%int count0 = 0; 
 									%>
-									<th><input type="checkbox" name="all"  onclick="setAll(this)" >&nbsp;&nbsp;&nbsp;&nbsp;</th>
+									<th style="width:40px"><input type="checkbox" name="all"  onclick="setAll(this)" >&nbsp;&nbsp;&nbsp;</th>
 										<c:forEach var="t" items="${all.get(0)}">   <!-- column이름 -->
 										<%
 										pageContext.setAttribute("count0",count0);%>
@@ -253,7 +253,7 @@
 										%> 
 										
 										
-										<td style=width:2000px>
+										<td>
 			<input type="checkbox" name="del" value="${i}" onclick="setBg()" >								
 										</td>
 
@@ -285,7 +285,7 @@
 								</table>
 								<%
 									String url = request.getRequestURL().toString(); //url 가져오기
-								System.out.println(url);
+								//System.out.println(url);
 								pageContext.setAttribute("url", url);
 								%>
 								

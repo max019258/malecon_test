@@ -47,15 +47,13 @@ public class ExelController extends HttpServlet {
 		Connection connection=(Connection)session.getAttribute("conn"); //커넥션 가지고오기
 		
 		
+		
 		String conn_name = (String)session.getAttribute("conn_name");
 		String	open_name = (String)session.getAttribute("open_name"); 
 		String table_name = (String)session.getAttribute("table_name");
 		String where = (String)session.getAttribute("where");
 		
-		System.out.println("꽥:"+connection);
-		System.out.println("꽥:"+open_name);
-		System.out.println("꽥:"+table_name);
-		System.out.println("꽥:"+where);
+	
 		
 		ArrayList<String[]> table_content=new ArrayList<String[]>(); //리스트 선언
 		if(where==null) { 	//where이 있을 때
@@ -74,7 +72,7 @@ public class ExelController extends HttpServlet {
 		//---------------엑셀에 넣을 자료들 넣었음 -----------------------------------------------------
 		
 		
-		String strPath="D:\\eclipse_project\\MaleconWeb\\src\\main\\webapp\\upload\\"+ conn_name+"_"+open_name+"_"+table_name+".xlsx";
+		String strPath="E:\\eclipse_preject\\MaleconWeb\\src\\main\\webapp\\upload\\"+ conn_name+"_"+open_name+"_"+table_name+".xlsx";
 		File file = new File(strPath); 
 		if( file.exists() ){ 
 				if(file.delete()){ //파일이 있을 때 
@@ -119,8 +117,8 @@ public class ExelController extends HttpServlet {
 			
 			String[] row_content= table_content.get(i);// row 내용 선언
 		
-			for(int j=0;j<table_content.get(0).length;j++) {
-				cell=row.createCell(j);			//행에다가 셀생성
+			for(int j=1;j<table_content.get(0).length;j++) {
+				cell=row.createCell(j-1);			//행에다가 셀생성
 				cell.setCellValue(row_content[j]); //cell값 
 				
 				cell.setCellStyle(csBase);	//셀스타일생성
@@ -131,19 +129,17 @@ public class ExelController extends HttpServlet {
 					content_length=row_content[j].length();
 				}
 				
-				if(columnWidth[j]<content_length) {
-					columnWidth[j]=content_length;
+				if(columnWidth[j-1]<content_length) {
+					columnWidth[j-1]=content_length;
 				}			
 			}
 			
 		}
 	
 		for(int i=0;i<columnWidth.length;i++) {
-			if(i==0) {
-				sh.setColumnWidth(i,columnWidth[i]*1); // i번째 컬럼 , width 
-			}else {
+		
 				sh.setColumnWidth(i,columnWidth[i]*500); // i번째 컬럼 , width 
-			}
+		
 		}
 		
 		
@@ -157,7 +153,6 @@ public class ExelController extends HttpServlet {
 				RequestDispatcher rd=req.getRequestDispatcher("downloadExcel.jsp");// 포위딩
 				rd.forward(req,resp);
 		    }
-			
 	}
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//doGet(req,resp);
