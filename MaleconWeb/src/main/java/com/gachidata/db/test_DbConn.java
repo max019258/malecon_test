@@ -20,9 +20,9 @@ import com.gachidata.page.Paging;
 
 
 
-public class DbConn
+public class test_DbConn
 {
-	
+		
        public  static Connection getConnection(DbMaterial dbmaterial)
        {
            Connection conn = null;

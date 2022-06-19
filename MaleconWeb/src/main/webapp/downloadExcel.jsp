@@ -31,7 +31,7 @@
  
     // 파일 업로드된 경로
     //String root ="D:\\eclipse_project\\MaleconWeb\\src\\main\\webapp\\upload\\" + "test" + ".xlsx";
-    String savePath ="E:\\eclipse_preject\\MaleconWeb\\src\\main\\webapp\\upload";
+    String savePath ="D:\\eclipse_preject\\MaleconWeb\\src\\main\\webapp\\upload";
  
     // 서버에 실제 저장된 파일명
     String filename = conn_name+"_"+open_name+"_"+table_name+".xlsx" ;

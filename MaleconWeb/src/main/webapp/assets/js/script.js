@@ -583,18 +583,23 @@ $(document).ready(function(){ //
 function viewTable(){
 
 	conn_name=$('#conn_name').val();
-	query = $('#query').val().trim();
-	if(query.substring(query.length-1,query.length)==";"){
-		query=query.substring(0,query.length-1);
-	}
-	query_arr=query.split(";");
-	console.log(query_arr);
-	
-	num=0;
-	query_arr.forEach(function(element){
-		num+=1;
-  		 window.open("viewTable.jsp?conn_name="+conn_name+"&query="+element.replace("\n",""),num,"width=800, height=700");
-	});
+  query = $('#query').val().trim();
+  if(query.substring(query.length-1,query.length)==";"){
+    query=query.substring(0,query.length-1);
+  }
+  query_arr=query.split(";");
+  console.log(query_arr);
+  
+  num=0;
+  query_arr.forEach(function(element){
+    num+=1;
+    // 만약에 앞에 있는 따옴표가 짝수인 :인 변수가 있으면 bind.jsp로 보내기
+    if(element.includes(':')){
+      window.open("viewBind.jsp?conn_name="+conn_name+"&query="+element.replace(/\n/g," "),num,"width=800, height=700");
+    }else{
+       window.open("viewTable.jsp?conn_name="+conn_name+"&query="+element.replace(/\n/g," "),num,"width=800, height=700");
+    }
+  });
 
 	
 	
@@ -636,3 +641,20 @@ function viewPlan(){
   		 window.open("viewPlan.jsp?conn_name="+conn_name+"&query="+element.replace(/\n/g," "),num,"width=800, height=700");
 	});
 }
+
+//--------------------------------------------------------------------------
+function viewBind(){
+
+	  var result = "";
+
+            // 폼 요소가 있는 만큼 반복하자.
+
+            $('td :input').each(function(index) { //td 안에  있는 input값 불러오기
+
+                result += "1." + this.value +'\n' 
+            });
+
+            alert(result);
+}
+
+
