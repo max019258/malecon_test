@@ -1,4 +1,4 @@
-<h1> 개발 </h1>
+<h1> 웹버전 SQL툴 개발 </h1>
 
 <b> 개발환경 :</b>
 - CSS , html , Java, Jsp, 자바스크립트,jQUERY, ORACLE
